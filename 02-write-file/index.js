@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 
-const path = './02-write-file/text.txt';
+const path = `${__dirname}/text.txt`;
 
 const rl = readline.createInterface({
   input: process.stdin,
