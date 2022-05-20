@@ -1,6 +1,9 @@
-const fs = require('fs');
-const path = `${__dirname}/text.txt`;
-const stream = new fs.ReadStream(path, {encoding: 'utf-8'});
+const
+  fs = require('fs'),
+  path = require('path'),
+  dir = path.join(__dirname, '/text.txt');
+
+const stream = new fs.ReadStream(dir, 'utf-8');
 
 stream.on('readable', () => {
   const data = stream.read();

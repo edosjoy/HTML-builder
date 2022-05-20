@@ -1,31 +1,29 @@
-const fs = require('fs');
-const readline = require('readline');
+const
+  fs = require('fs'),
+  path = require('path'),
+  readline = require('readline');
 
-const path = `${__dirname}/text.txt`;
+const dir = path.join(__dirname, '/text.txt');
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-fs.open(path, 'w', (err) => {
-  if (err) {
-    throw err.message;
-  }
+fs.open(dir, 'w', errOpen => {
+  if (errOpen) throw errOpen;
 });
 
 function writeFile() {
-  rl.question('Input text here: ', (answer) => {
+  rl.question('Input text here: ', answer => {
 
     if (answer === 'exit') {
       console.log('The process is closed');
       return rl.close();
     }
 
-    fs.appendFile(path, `${answer}\n`, (err) => {
-      if (err) {
-        throw err.message;
-      }
+    fs.appendFile(dir, `${answer}\n`, errAppendFile => {
+      if (errAppendFile) throw errAppendFile;
     });
 
     writeFile();

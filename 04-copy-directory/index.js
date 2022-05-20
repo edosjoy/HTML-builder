@@ -1,12 +1,15 @@
-const fs = require('fs');
-const dir = __dirname;
+const
+  fs = require('fs'),
+  path = require('path');
 
-fs.readdir(dir, (err, files) => {
-  if (err) throw err.message;
+const dir = path.join(__dirname);
+
+fs.readdir(dir, (errReaddir, files) => {
+  if (errReaddir) throw errReaddir;
 
   if (!files.includes('files-copy')) {
-    fs.mkdir(`${dir}/files-copy`, error => {
-      if (error) throw error.message;
+    fs.mkdir(`${dir}/files-copy`, errMkdir => {
+      if (errMkdir) throw errMkdir;
     });
   }
 });
