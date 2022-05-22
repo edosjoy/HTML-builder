@@ -1,27 +1,30 @@
 const
-  fs = require('fs'),
+  fsProm = require('fs/promises'),
   path = require('path');
 
 const dir = path.join(__dirname);
 
-fs.readdir(dir, (errReaddir, files) => {
-  if (errReaddir) throw errReaddir;
-
-  if (!files.includes('files-copy')) {
-    fs.mkdir(`${dir}/files-copy`, errMkdir => {
-      if (errMkdir) throw errMkdir;
+fsProm.readdir(dir).then(files => {
+  if (files.includes('files-copy')) {
+    fsProm.readdir(`${dir}/files-copy`).then(async filesFolderCopy => {
+      for (const file of filesFolderCopy) {
+        await fsProm.unlink(`${dir}/files-copy/${file}`);
+      }
+      fsProm.readdir(`${dir}/files`).then(async files => {
+        for (const file of files) {
+          await fsProm.copyFile(`${dir}/files/${file}`, `${dir}/files-copy/${file}`);
+        }
+        console.log('-= Files copied =-');
+      });
+    });
+  } else {
+    fsProm.mkdir(`${dir}/files-copy`).then(() => {
+      fsProm.readdir(`${dir}/files`).then(async files => {
+        for (const file of files) {
+          await fsProm.copyFile(`${dir}/files/${file}`, `${dir}/files-copy/${file}`);
+        }
+        console.log('-= Files copied =-');
+      });
     });
   }
-});
-
-fs.readdir(`${dir}/files`, (errReaddir, files) => {
-  if (errReaddir) throw errReaddir;
-
-  files.forEach(file => {
-    fs.copyFile(`${dir}/files/${file}`, `${dir}/files-copy/${file}`, errCopyFile => {
-      if (errCopyFile) throw errCopyFile;
-    });
-  });
-
-  console.log('-= Files copied =-');
 });

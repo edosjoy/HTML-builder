@@ -1,13 +1,20 @@
 const
   fs = require('fs'),
   path = require('path'),
-  readline = require('readline');
+  readline = require('readline'),
+  process = require('process');
 
 const dir = path.join(__dirname, '/text.txt');
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
+});
+
+let message = '\nThe process is closed';
+
+process.on('exit', () => {
+  console.log(message);
 });
 
 fs.open(dir, 'w', errOpen => {
@@ -18,7 +25,7 @@ function writeFile() {
   rl.question('Input text here: ', answer => {
 
     if (answer === 'exit') {
-      console.log('The process is closed');
+      message = 'The process is closed';
       return rl.close();
     }
 

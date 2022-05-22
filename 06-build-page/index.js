@@ -24,28 +24,29 @@ function createFileIndexHtml() {
     if (errOpen) throw errOpen;
   });
 
-  fs.readFile(`${dir}/template.html`, 'utf-8', async (errReadFile, data) => {
-    if (errReadFile) throw errReadFile;
+  fsProm.readdir(dirComponents).then(files => {
+    fs.readFile(`${dir}/template.html`, 'utf-8', async (errReadFile, data) => {
+      if (errReadFile) throw errReadFile;
 
-    data = data.split('\n');
+      data = data.split('\n');
 
-    for (const item of data) {
-      if (item.includes('header')) {
-        await fsProm.readFile(`${dirComponents}/header.html`, 'utf-8').then(async dataHeader => {
-          await fsProm.appendFile(`${dirProjectDist}/index.html`, `${dataHeader}\n`);
-        });
-      } else if (item.includes('articles')) {
-        await fsProm.readFile(`${dirComponents}/articles.html`, 'utf-8').then(async dataArticles => {
-          await fsProm.appendFile(`${dirProjectDist}/index.html`, `${dataArticles}\n`);
-        });
-      } else if (item.includes('footer')) {
-        await fsProm.readFile(`${dirComponents}/footer.html`, 'utf-8').then(async dataFooter => {
-          await fsProm.appendFile(`${dirProjectDist}/index.html`, `${dataFooter}\n`);
-        });
-      } else {
-        await fsProm.appendFile(`${dirProjectDist}/index.html`, `${item}\n`);
+      for (const item of data) {
+        let section = 0;
+        for (const file of files) {
+          if (item.includes(file.split('.')[0])) {
+            await fsProm.readFile(`${dirComponents}/${file.split('.')[0]}.html`, 'utf-8').then(async dataSection => {
+              await fsProm.appendFile(`${dirProjectDist}/index.html`, `${dataSection}\n`);
+            });
+            section = 1;
+          }
+        }
+
+        if (section === 0) {
+          await fsProm.appendFile(`${dirProjectDist}/index.html`, `${item}\n`);
+        }
       }
-    }
+
+    });
   });
 }
 
